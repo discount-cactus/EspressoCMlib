@@ -1,9 +1,3 @@
-/*
-Name:     Espresso.cpp
-Created:  8/8/24 8:12:06 PM
-Author:   Brandon
-*/
-
 #include "Espresso.h"
 
 
@@ -57,29 +51,42 @@ uint8_t EspressoCM::getCoreNumber(){
   return CORE;
 }
 
-//Returns which supply is powering the CM
-// Returns 1 if powered via battery, returns 0 if powered by main power connector(s)
-/*bool EspressoCM::getPowerSource(){
-  if(analogRead(VREF_VBATT_pin) > 10){
-    return 1;
-  }else{
-    return 0;
-  }
-}*/
-
-//Returns the current draw of the Espresso CM.
+//Returns the measured current draw of the Espresso CM.
+//This function is made for use ONLY with the onboard ATtiny85 chip.
 float EspressoCM::getBoardCurrent(){
-  float offset_ISNS = 0.1;              //ISNS offset of 100mV due to resistance in the trace
-  int value = analogRead(ISNS_pin);
-  float current = value * 3.3/4095;
-  current + offset_ISNS;
+  #if (__AVR_ATtiny85__)
+    float offset_ISNS = 0.1;              //ISNS offset of 100mV due to resistance in the trace
+    int value = analogRead(ISNS_pin);
+    float current = value * 3.3/4095;
+    current + offset_ISNS;
 
-  return current;
+    return current;
+  #else
+    return 0;
+  #endif
+}
+
+//Returns the measured watt-hours of the Espresso CM.
+float EspressoCM::getBoardWattHours(float current, float delta){
+  float voltage = 3.3;
+  //float current = getBoardCurrent();
+
+  float wh = (voltage * current * delta) / 3600;
+
+  return wh;
+}
+
+//Returns the measured amp-hours of the Espresso CM.
+float EspressoCM::getBoardAmpHours(float current, float delta){
+  float voltage = 3.3;
+  float ah = (current * delta) / 3600;
+
+  return ah;
 }
 
 //Computes and returns the power consumption of the Espresso CM board and writes to its scratchpad
 //This function is made for use ONLY with the onboard ATtiny85 chip.
-float EspressoCM::getBoardPower_ATtiny(){
+/*float EspressoCM::getBoardPower_ATtiny(){
   #if (__AVR_ATtiny85__)
     float voltage = 3.3;
     float current = getBoardCurrent();
@@ -94,7 +101,7 @@ float EspressoCM::getBoardPower_ATtiny(){
   #else
     return 0;
   #endif
-}
+}*/
 
 //Generates a random password.
 /*String EspressoCM::generate_password(){
@@ -296,8 +303,7 @@ byte EspressoCM::decodeLDPC(uint16_t encodedData){
   return decodedData;
 }
 
-//Convolution codes
-/*Test sketch:
+/*Convolution codes Test sketch:
 void setup(){
   Serial.begin(9600);
 
@@ -313,34 +319,32 @@ void setup(){
 void loop(){
 }*/
 
-// Convolutional Encoder with G1 = 111 (7) and G2 = 101 (5) polynomials
-uint16_t EspressoCM::encodeConvolutional(uint8_t inputByte) {
+//Encodes a byte of data with Convolution Codes using G1 = 111 (7) and G2 = 101 (5) polynomials
+uint16_t EspressoCM::encodeConvolution(uint8_t inputByte){
   uint8_t shiftReg = 0; // shift register to hold the state
   uint16_t encodedData = 0; // Holds the final encoded output for the entire byte
 
   // Loop through all 8 bits of the input byte
-  for (int i=7; i >= 0; i--) {
+  for (uint8_t i=7; i >= 0; i--) {
     bool inputBit = bitRead(inputByte,i);//(inputByte >> i) & 0x01; // Get the current input bit (from MSB to LSB)
     shiftReg = (shiftReg << 1) | (inputBit & 0x01);
     bool output1 = bitRead(shiftReg,0) ^ bitRead(shiftReg,1) ^ bitRead(shiftReg,2);
     bool output2 = bitRead(shiftReg,0) ^ bitRead(shiftReg,2);
-    //Serial.print(bitRead(shiftReg,2)); Serial.print(bitRead(shiftReg,1));Serial.print(bitRead(shiftReg,0)); Serial.print(" "); Serial.print(output1); Serial.println(output2);
 
     encodedData = (encodedData << 2) | (output1 << 1) | output2;
   }
   return encodedData; // Return the 16-bit encoded data for the entire byte
 }
 
-// Decoder function (Viterbi Algorithm)
-uint8_t EspressoCM::decodeConvolutional(uint16_t encodedData) {
+//Decodes data encoded by Convolution Codes with a simple Viterbi Algorithm
+uint8_t EspressoCM::decodeConvolution(uint16_t encodedData){
   static uint8_t shiftReg = 0; // Shift register to track previous states
   uint8_t decodedByte = 0;
 
   // Loop through the 16 bits of encoded data in pairs (2 bits per input bit)
-  for(int i = 7; i >= 0; i--){
+  for(uint8_t i=7; i >= 0; i--){
     bool output1 = bitRead(encodedData, (2 * i + 1));
     bool output2 = bitRead(encodedData, (2 * i));
-    //Serial.print(output1); Serial.print(output2); Serial.print(" ");
 
     // Decide the most probable input bit based on output1 and output2
     bool inputBit;
@@ -349,14 +353,10 @@ uint8_t EspressoCM::decodeConvolutional(uint16_t encodedData) {
     }else{
       inputBit = shiftReg;
     }
-    //Serial.print(inputBit); Serial.print(" ");
 
     // Update the shift register based on the current input bit
     shiftReg = (shiftReg << 1) | inputBit;
-    //Serial.print(shiftReg, BIN); Serial.print(" ");
-
     decodedByte = (decodedByte << 1) | inputBit;
-    //Serial.print(decodedByte, BIN); Serial.println(" ");
   }
 
   return decodedByte;

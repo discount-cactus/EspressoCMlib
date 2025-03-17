@@ -2,6 +2,7 @@
 //ESP32 reads the from the scratchpad of ATtiny85
 
 #include <E2B.h>
+#include <Espresso.h>
 
 #define E2B_pin 2
 
@@ -9,6 +10,7 @@ unsigned char rom[8] = {FAMILYCODE, 0xAD, 0xDA, 0xCE, 0x0F, 0x00, 0x11, 0x00};
 unsigned char scratchpad[9] = {0x00, 0x00, 0x4B, 0x46, 0x7F, 0xFF, 0x00, 0x10, 0x00};
 
 E2B e2b(E2B_pin);  // on pin 2 (a 4.7K resistor is necessary)
+EspressoCM cm;
 
 //uint8_t KEY = 0x30; //CHANGE TO SECURED DEVICE KEY TO UNLOCK A SECURED DEVICE
 
@@ -16,7 +18,7 @@ void setup(){
   attachInterrupt(E2B_pin,respond,CHANGE);
   Serial.begin(9600);
   while(!Serial);
-  Serial.println("E2B Master Node Test.");
+  Serial.println("Espresso Power Monitor.");
   e2b.init(rom);
   e2b.setScratchpad(scratchpad);
 
@@ -29,7 +31,7 @@ void respond(){
 }
 
 void loop(){
-  byte i;
+  /*byte i;
   byte present = 0;
   byte data[9];
   byte addr[8];
@@ -67,7 +69,7 @@ void loop(){
   present = e2b.reset();
   e2b.select(addr);
   //e2b.unlock(KEY);        // uncomment when addressing secured devices
-  e2b.write(0xBE);         // Read Scratchpad
+  e2b.write(0xBE);         // Read Scratchpad*/
 
   /*Serial.print("  Data = ");
   Serial.print(present, HEX);
@@ -85,6 +87,10 @@ void loop(){
   float decimal = data[1];
   decimal /= 100;
   float raw = integer + decimal;
-  Serial.print("  Power = "); Serial.print(raw); Serial.println("W");
+  float curr = raw / 3.3;
+  Serial.print("  Power = "); Serial.print(raw); Serial.println(" W");
+  Serial.print("  Amp-Hours = "); Serial.print(cm.getBoardAmpHours(curr,1)*1000,8); Serial.println(" mAh");
+  Serial.print("  Watt-Hours = "); Serial.print(cm.getBoardWattHours(curr,1)*1000,8); Serial.println(" mWh");
+
   
 }

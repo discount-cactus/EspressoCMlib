@@ -1,9 +1,3 @@
-/*
-Name:     Espresso.h
-Created:  10/11/2022 2:27:23 PM
-Author:   Brandon
-*/
-
 #ifndef Espresso_h
 #define Espresso_h
 
@@ -21,7 +15,9 @@ class EspressoCM{
     EspressoCM();
     uint8_t getCoreNumber();
     float getBoardCurrent();
-    float getBoardPower_ATtiny();
+    float getBoardWattHours(float current, float delta);
+    float getBoardAmpHours(float current, float delta);
+    //float getBoardPower_ATtiny();
     //String generate_password();
     //void establish_WiFi_server();
 
@@ -33,8 +29,8 @@ class EspressoCM{
     uint8_t hammingDecode(uint8_t encodedData);
     uint16_t encodeLDPC(byte data);
     byte decodeLDPC(uint16_t encodedData);
-    uint16_t encodeConvolutional(uint8_t inputByte);
-    uint8_t decodeConvolutional(uint16_t encodedData);
+    uint16_t encodeConvolution(uint8_t inputByte);
+    uint8_t decodeConvolution(uint16_t encodedData);
 
     //String username;
 
@@ -49,6 +45,7 @@ class EspressoCM{
 
   // library-accessible "private" interface
   private:
+    unsigned long runTime;
     //String password;
 };
 
