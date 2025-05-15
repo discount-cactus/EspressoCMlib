@@ -1,45 +1,30 @@
 #include "Espresso.h"
 
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////ESP32//////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 EspressoCM::EspressoCM(){
   CORE = 0;
-  CORESEL0 = 0;
-  CORESEL1 = 0;
-  LEDpin = 0;
-  E2B_BUILTIN = 0;
-  E2B_EXTERNAL = 0;
-  CS_FLASH = 0;
-  LEDpin = 0;
-  E2B_BUILTIN = 0;
-  ISNS_pin = 0;
-
-  #if ARDUINO_ARCH_ESP32
-    CORESEL0 = 37;
-    CORESEL1 = 36;
-    LEDpin = 46;
-    E2B_BUILTIN = 9;
-    E2B_EXTERNAL = 21;
-    CS_FLASH = 10;
-    pinMode(CORESEL0,INPUT);
-    pinMode(CORESEL1,INPUT);
-    if(( digitalRead(CORESEL0) ) && ( !digitalRead(CORESEL1) )){
-      CORE = CORE1;
-    }
-    if(( !digitalRead(CORESEL0) ) && ( digitalRead(CORESEL1) )){
-      CORE = CORE2;
-    }
-    if (digitalRead(CORESEL0) == digitalRead(CORESEL1)){
-      #warning "Invalid read of core assignment pins."
-    }
-  #elif __AVR_ATtiny85__
-    LEDpin = 3;
-    E2B_BUILTIN = 2;
-    ISNS_pin = 4;
-    CORE = CORE3;
-  #else
-    #error "Incorrect microcontroller core selected."
-  #endif
+  CORESEL0 = 37;
+  CORESEL1 = 36;
+  LEDpin = 46;
+  E2B_BUILTIN = 9;
+  E2B_EXTERNAL = 21;
+  CS_FLASH = 10;
+  pinMode(CORESEL0,INPUT);
+  pinMode(CORESEL1,INPUT);
+  if(( digitalRead(CORESEL0) ) && ( !digitalRead(CORESEL1) )){
+    CORE = CORE1;
+  }
+  if(( !digitalRead(CORESEL0) ) && ( digitalRead(CORESEL1) )){
+    CORE = CORE2;
+  }
+  if (digitalRead(CORESEL0) == digitalRead(CORESEL1)){
+    #warning "Invalid read of core assignment pins."
+  }
 
   //String username = "";
   //String password = "";
@@ -51,23 +36,17 @@ uint8_t EspressoCM::getCoreNumber(){
   return CORE;
 }
 
-//Returns the measured current draw of the Espresso CM.
-//This function is made for use ONLY with the onboard ATtiny85 chip.
-float EspressoCM::getBoardCurrent(){
-  #if (__AVR_ATtiny85__)
-    float offset_ISNS = 0.1;              //ISNS offset of 100mV due to resistance in the trace
-    int value = analogRead(ISNS_pin);
-    float current = value * 3.3/4095;
-    current + offset_ISNS;
+//Self-Test / Diagnostics Mode: Upon power-up, the board can verify memory integrity, sensor states, etc.
+//If an error is detected, its error number is returned - no errors returns 0
+uint8_t EspressoCM::runDiagnostics(){
+  uint8_t errorNum = 0;
+  //Do stuff
 
-    return current;
-  #else
-    return 0;
-  #endif
+  return errorNum;
 }
 
 //Returns the measured watt-hours of the Espresso CM.
-float EspressoCM::getBoardWattHours(float current, float delta){
+/*float EspressoCM::getBoardWattHours(float current, float delta){
   float voltage = 3.3;
   //float current = getBoardCurrent();
 
@@ -84,41 +63,34 @@ float EspressoCM::getBoardAmpHours(float current, float delta){
   return ah;
 }
 
-//Computes and returns the power consumption of the Espresso CM board and writes to its scratchpad
-//This function is made for use ONLY with the onboard ATtiny85 chip.
-/*float EspressoCM::getBoardPower_ATtiny(){
-  #if (__AVR_ATtiny85__)
-    float voltage = 3.3;
-    float current = getBoardCurrent();
-    float power = voltage * current;
+//Gets the power draw from the board
+float EspressoCM::getBoardLoadPower(){
+  float current = getBoardCurrent();
+  return (3.3 * current);
+}
 
-    int IntegerPart = (int)(power);
-    int DecimalPart = 100 * (power - IntegerPart);
-    scratchpad[0] = IntegerPart;
-    scratchpad[1] = DecimalPart;
+//Gets the input power draw from the supply
+float EspressoCM::getBoardInputPower(){
+  float Vin = analogRead(5);
+  float current = getBoardCurrent();
+  return (Vin * current);
+}
 
-    return power;
-  #else
-    return 0;
-  #endif
-}*/
+//Computes the heat dissipated by the regulator on the board
+float EspressoCM::getBoardHeatDissipation(){
+  float Pin = getBoardInputPower();
+  float Pboard = getBoardLoadPower();
 
-//Generates a random password.
-/*String EspressoCM::generate_password(){
-  String pwd = "";
-  int l = random(8,16);
-  String vals[88] = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","0","!","@","#","$","%","^","&","*","(",")","-","_","=","+",",",".","<",">","/","?","[","]","{","}","\","|"};
-  for(int j=0; j < l; j++){
-    int a = random(88);
-    String inc = vals[a];
+  return (Pin - Pboard);
+}
 
-    pwd += inc;
-  }
-  return password;
-}*/
+//Computes the temperature rise on the regulator
+float EspressoCM::getRegulatorTemperatureRise(){
+  //const float deltaT = 19.9;
+  //float HeatDissipation = getBoardHeatDissipation();
+  float Tjunction = 25 + (19.9 * getBoardHeatDissipation());
 
-//Creates a private wi-fi server.
-/*void EspressoCM::establish_WiFi_server(){
+  return Tjunction;
 }*/
 
 //Returns the input value in mils
@@ -361,3 +333,27 @@ uint8_t EspressoCM::decodeConvolution(uint16_t encodedData){
 
   return decodedByte;
 }
+
+//Generates a random password.
+/*String EspressoCM::generate_password(){
+  String pwd = "";
+  int l = random(8,16);
+  String vals[88] = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","0","!","@","#","$","%","^","&","*","(",")","-","_","=","+",",",".","<",">","/","?","[","]","{","}","\","|"};
+  for(int j=0; j < l; j++){
+    int a = random(88);
+    String inc = vals[a];
+
+    pwd += inc;
+  }
+  return password;
+}*/
+
+//Creates a private wi-fi server.
+/*void EspressoCM::establish_WiFi_server(){
+}*/
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////ATTINY85///////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
