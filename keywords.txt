@@ -1,20 +1,26 @@
 #######################################
-# Syntax Coloring Map For E2B
+# Syntax Coloring Map For EspressoCMlib
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
-
 EspressoCM	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-
 getCoreNumber KEYWORD2
-setOffset_ISNS KEYWORD2
-getBoardCurrentKEYWORD2
+runDiagnostics KEYWORD2
+mils KEYWORD2
+millimeters
+checksum
+hammingEncode
+hammingDecode
+encodeLDPC
+decodeLDPC
+encodeConvolution
+decodeConvolution
 
 #######################################
 # Instances (KEYWORD2)
@@ -24,17 +30,14 @@ getBoardCurrentKEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
+vbat
+CORE1
+CORE2
 
-vbat LITERAL1
-CORE1 LITERAL1
-CORE2 LITERAL1
-CORE3 LITERAL1
+CORE LITERAL1
 CORESEL0 LITERAL1
 CORESEL1 LITERAL1
 LEDpin LITERAL1
 E2B_BUILTIN LITERAL1
-ISNS_pin LITERAL1
 E2B_EXTERNAL LITERAL1
 CS_FLASH LITERAL1
-CS_CAN LITERAL1
-CAN_INT LITERAL1

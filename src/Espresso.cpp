@@ -41,7 +41,6 @@ uint8_t EspressoCM::getCoreNumber(){
 uint8_t EspressoCM::runDiagnostics(){
   uint8_t errorNum = 0;
   //Do stuff
-
   return errorNum;
 }
 
