@@ -7,10 +7,14 @@
 #define LEDpin_Y 1
 #define VIN_pin 4
 
+#define R_sense 0.003
+#define opamp_gain 733.33
+#define v_offset 0.05
+
 E2B e2b(E2B_pin);  // on pin 2 (a 4.7K resistor is necessary)
 
 byte configByte = 0xAA;
-float VIN = 0.0;
+
 
 //unsigned char rom[8];
 unsigned char rom[8] = {FAMILYCODE, 0xE2, 0xCC, 0x2D, 0x01, 0x25, 0xB8, 0x30};
@@ -35,7 +39,6 @@ void loop(){
   e2b.waitForRequest(false);
   digitalWrite(LEDpin_G,LOW);
   if (e2b.getScratchpad(4) != 0xBE || e2b.getScratchpad(0) == 0xA){
-    VIN = getInputVoltage();
     getPower();
   }
 }
@@ -49,7 +52,15 @@ float getInputVoltage(){
 //Assembles data values into the scratchpad
 void getPower(){
   int IntegerPart, DecimalPart;
-  float current = analogRead(VIN_pin);
+
+  float VIN = getInputVoltage();
+
+  float raw = analogRead(VIN_pin);
+  float voltage = (raw / 1023.0) * 3.3;   //Scales to actual voltage (assuming 3.3V Vcc as ADC ref)
+  voltage -= v_offset;                    //Calculates out the offset from the PCB trace
+  float v_sense = voltage / opamp_gain;   //Back-calculates with the op-amps gain
+  float current = v_sense / R_sense;      //Uses Ohm's Law to calculate the measured current from the shunt resistor
+
   float loadPower = 3.3 * current;
   e2b.scratchpad[0] = configByte;
 
@@ -69,7 +80,7 @@ void getPower(){
   e2b.scratchpad[6] = IntegerPart;
   e2b.scratchpad[7] = DecimalPart;
 
-  e2b.scratchpad[8] = current;
+  e2b.scratchpad[8] = raw;
 
   if(loadPower >= 4.5){
     digitalWrite(LEDpin_Y,HIGH);
