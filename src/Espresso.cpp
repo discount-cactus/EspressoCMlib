@@ -11,7 +11,7 @@ EspressoCM::EspressoCM(){
   CORESEL0 = 37;
   CORESEL1 = 36;
   LEDpin = 46;
-  E2B_BUILTIN = 9;
+  E2B_BUILTIN = 40;
   E2B_EXTERNAL = 21;
   CS_FLASH = 10;
   pinMode(CORESEL0,INPUT);
@@ -44,53 +44,46 @@ uint8_t EspressoCM::runDiagnostics(){
   return errorNum;
 }
 
-//Returns the measured watt-hours of the Espresso CM.
-/*float EspressoCM::getBoardWattHours(float current, float delta){
-  float voltage = 3.3;
-  //float current = getBoardCurrent();
-
-  float wh = (voltage * current * delta) / 3600;
-
-  return wh;
+//Calculates the efficiency of the on-board 3.3V regulator
+float EspressoCM::getBoardLDOEfficiency(float _pin, float _pout){
+  return (_pout / _pin);
 }
 
-//Returns the measured amp-hours of the Espresso CM.
-float EspressoCM::getBoardAmpHours(float current, float delta){
-  float voltage = 3.3;
-  float ah = (current * delta) / 3600;
-
-  return ah;
-}
-
-//Gets the power draw from the board
-float EspressoCM::getBoardLoadPower(){
-  float current = getBoardCurrent();
-  return (3.3 * current);
-}
-
-//Gets the input power draw from the supply
-float EspressoCM::getBoardInputPower(){
-  float Vin = analogRead(5);
-  float current = getBoardCurrent();
-  return (Vin * current);
-}
-
-//Computes the heat dissipated by the regulator on the board
-float EspressoCM::getBoardHeatDissipation(){
-  float Pin = getBoardInputPower();
-  float Pboard = getBoardLoadPower();
-
-  return (Pin - Pboard);
+//Computes the power/heat dissipated by the regulator on the board
+float EspressoCM::getBoardHeatDissipation(float _pin, float _pout){
+  return (_pin - _pout);
 }
 
 //Computes the temperature rise on the regulator
-float EspressoCM::getRegulatorTemperatureRise(){
+float EspressoCM::getRegulatorTemperatureRise(float _pin, float _pout){
   //const float deltaT = 19.9;
   //float HeatDissipation = getBoardHeatDissipation();
-  float Tjunction = 25 + (19.9 * getBoardHeatDissipation());
+  float Tjunction = 25 + (19.9 * getBoardHeatDissipation(_pin, _pout));
 
   return Tjunction;
-}*/
+}
+
+// Calculates required heatsink thermal resistance in °C/W
+// Example: TI TPS7A4533, RθJC ≈ 3°C/W, RθCS ≈ 0.5°C/W, Tmax = 125°C, ambient = 40°C
+/*float rthRequired = espresso.getRequiredHeatsinkThermalResistance(125, 40, 3.0, 0.5);
+Serial.print("Required heatsink RθSA: ");
+Serial.print(rthRequired);
+Serial.println(" °C/W");*/
+float EspressoCM::getRequiredHeatsinkThermalResistance(float _pin, float _pout,float Tmax, float Tambient, float RthJC, float RthCS){
+    float Ploss = getBoardHeatDissipation(_pin, _pout);
+    return ((Tmax - Tambient) / Ploss) - (RthJC + RthCS);
+}
+
+// Calculates required airflow in CFM for a given allowed temperature rise
+// Example airflow calculation: allow 20°C rise
+/*float cfmRequired = espresso.getRequiredAirflow(20.0);
+Serial.print("Required airflow: ");
+Serial.print(cfmRequired);
+Serial.println(" CFM");*/
+float EspressoCM::getRequiredAirflow(float _pin, float _pout, float allowedRise){
+    float Ploss = getBoardHeatDissipation(_pin, _pout);
+    return (3.16 * Ploss) / allowedRise;
+}
 
 //Returns the input value in mils
 //Converts an input value (in millimeters) to mils

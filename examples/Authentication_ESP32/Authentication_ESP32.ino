@@ -13,7 +13,7 @@
 #define CMD_ECHO              0x67
 #define CMD_RESET_STATE       0x68
 
-#define E2B_pin 2
+#define E2B_pin 21
 
 unsigned char rom[8] = {FAMILYCODE, 0xAD, 0xDA, 0xCE, 0x0F, 0x00, 0x11, 0x00};
 unsigned char scratchpad[9] = {0x00, 0x00, 0x4B, 0x46, 0x7F, 0xFF, 0x00, 0x10, 0x00};
@@ -34,7 +34,6 @@ void setup() {
   Serial.println("Espresso E2B Authentication - Host");
   //setHostFlag(rom,1);                 //Use when connecting multiple masters to the bus
   //e2b.setDeviceType(POINTTOPOINT);    //Can use this when only one device is connected
-  delay(1000); // Wait for target to be ready
 }
 
 void loop(){

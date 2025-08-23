@@ -14,12 +14,12 @@ class EspressoCM{
     EspressoCM();
     uint8_t getCoreNumber();
     uint8_t runDiagnostics();
-    /*float getBoardWattHours(float current, float delta);
-    float getBoardAmpHours(float current, float delta);
-    float getBoardLoadPower();
-    float getBoardInputPower();
-    float getBoardHeatDissipation();
-    float getRegulatorTemperatureRise();*/
+    
+    float getBoardLDOEfficiency(float _pin, float _pout);
+    float getBoardHeatDissipation(float _pin, float _pout);
+    float getRegulatorTemperatureRise(float _pin, float _pout);
+    float getRequiredHeatsinkThermalResistance(float _pin, float _pout,float Tmax, float Tambient, float RthJC, float RthCS);
+    float getRequiredAirflow(float _pin, float _pout, float allowedRise);
 
     float mils(float val_mm);
     float millimeters(float val_mils);
