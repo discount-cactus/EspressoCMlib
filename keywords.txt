@@ -12,15 +12,22 @@ EspressoCM	KEYWORD1
 #######################################
 getCoreNumber KEYWORD2
 runDiagnostics KEYWORD2
+
+getBoardLDOEfficiency KEYWORD2
+getBoardHeatDissipation KEYWORD2
+getRegulatorTemperatureRise KEYWORD2
+getRequiredHeatsinkThermalResistance KEYWORD2
+getRequiredAirflow KEYWORD2
+
 mils KEYWORD2
-millimeters
-checksum
-hammingEncode
-hammingDecode
-encodeLDPC
-decodeLDPC
-encodeConvolution
-decodeConvolution
+millimeters KEYWORD2
+checksum KEYWORD2
+hammingEncode KEYWORD2
+hammingDecode KEYWORD2
+encodeLDPC KEYWORD2
+decodeLDPC KEYWORD2
+encodeConvolution KEYWORD2
+decodeConvolution KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)

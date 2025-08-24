@@ -19,7 +19,7 @@ The EspressoCMlib library provides a versatile suite of tools for embedded hardw
 | `CORESEL0`     | Core selection pin 0           | `37`          |
 | `CORESEL1`     | Core selection pin 1           | `36`          |
 | `LEDpin`       | Onboard LED control pin        | `46`          |
-| `E2B_BUILTIN`  | Built-in E2B pin               | `9`           |
+| `E2B_BUILTIN`  | Built-in E2B pin               | `40`          |
 | `E2B_EXTERNAL` | External E2B pin               | `21`          |
 | `CS_FLASH`     | Chip-select for external flash | `10`          |
 
@@ -37,6 +37,43 @@ The EspressoCMlib library provides a versatile suite of tools for embedded hardw
 
 #### `uint8_t runDiagnostics()`
 - **Returns**: `0` if no issues are detected; otherwise, an error code.
+
+---
+
+---
+
+### ⚡ Power & Thermal Analysis
+
+#### `float getBoardLDOEfficiency(float _pin, float _pout)`
+- **Inputs**:
+  - `_pin` — Input power (W).
+  - `_pout` — Output power (W).
+- **Returns**: Efficiency of the onboard 3.3V regulator.
+
+#### `float getBoardHeatDissipation(float _pin, float _pout)`
+- **Inputs**: Same as above.
+- **Returns**: Power dissipated (W) as heat by the regulator.
+
+#### `float getRegulatorTemperatureRise(float _pin, float _pout)`
+- **Inputs**: Same as above.
+- **Returns**: Estimated regulator junction temperature (°C) based on dissipation.
+
+#### `float getRequiredHeatsinkThermalResistance(float _pin, float _pout, float Tmax, float Tambient, float RthJC, float RthCS)`
+- **Inputs**:
+  - `_pin` — Input power (W).
+  - `_pout` — Output power (W).
+  - `Tmax` — Maximum junction temperature (°C).
+  - `Tambient` — Ambient temperature (°C).
+  - `RthJC` — Thermal resistance junction-to-case (°C/W).
+  - `RthCS` — Thermal resistance case-to-sink (°C/W).
+- **Returns**: Required heatsink thermal resistance (°C/W).
+
+#### `float getRequiredAirflow(float _pin, float _pout, float allowedRise)`
+- **Inputs**:
+  - `_pin` — Input power (W).
+  - `_pout` — Output power (W).
+  - `allowedRise` — Maximum allowed temperature rise (°C).
+- **Returns**: Required airflow in **CFM** for adequate cooling.
 
 ---
 
