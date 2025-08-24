@@ -5,7 +5,7 @@
 #define E2B_pin 2
 #define LEDpin_G 3
 #define LEDpin_Y 1
-#define VIN_pin 4
+#define ISNS_pin 4
 
 #define R_sense 0.003
 #define opamp_gain 733.33
@@ -27,7 +27,7 @@ void setup(){
 
   pinMode(LEDpin_G,OUTPUT);
   pinMode(LEDpin_Y,OUTPUT);
-  pinMode(VIN_pin,INPUT);
+  pinMode(ISNS_pin,INPUT);
 }
 
 void respond(){
@@ -35,27 +35,19 @@ void respond(){
 }
 
 void loop(){
-  digitalWrite(LEDpin_G,HIGH);
   e2b.waitForRequest(false);
-  digitalWrite(LEDpin_G,LOW);
   if (e2b.getScratchpad(4) != 0xBE || e2b.getScratchpad(0) == 0xA){
     getPower();
   }
-}
-
-//Assembles the input voltage
-//This is a placeholder for users to add their own retreival logic
-float getInputVoltage(){
-  return 5.0;
 }
 
 //Assembles data values into the scratchpad
 void getPower(){
   int IntegerPart, DecimalPart;
 
-  float VIN = getInputVoltage();
+  float VIN = 5.0;
 
-  float raw = analogRead(VIN_pin);
+  float raw = analogRead(ISNS_pin);
   float voltage = (raw / 1023.0) * 3.3;   //Scales to actual voltage (assuming 3.3V Vcc as ADC ref)
   voltage -= v_offset;                    //Calculates out the offset from the PCB trace
   float v_sense = voltage / opamp_gain;   //Back-calculates with the op-amps gain
