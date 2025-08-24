@@ -36,14 +36,6 @@ uint8_t EspressoCM::getCoreNumber(){
   return CORE;
 }
 
-//Self-Test / Diagnostics Mode: Upon power-up, the board can verify memory integrity, sensor states, etc.
-//If an error is detected, its error number is returned - no errors returns 0
-uint8_t EspressoCM::runDiagnostics(){
-  uint8_t errorNum = 0;
-  //Do stuff
-  return errorNum;
-}
-
 //Calculates the efficiency of the on-board 3.3V regulator
 float EspressoCM::getBoardLDOEfficiency(float _pin, float _pout){
   return (_pout / _pin);

@@ -12,7 +12,6 @@ class EspressoCM{
   public:
     EspressoCM();
     uint8_t getCoreNumber();
-    uint8_t runDiagnostics();
 
     float getBoardLDOEfficiency(float _pin, float _pout);
     float getBoardHeatDissipation(float _pin, float _pout);

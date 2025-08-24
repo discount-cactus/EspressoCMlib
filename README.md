@@ -35,11 +35,6 @@ The EspressoCMlib library provides a versatile suite of tools for embedded hardw
 #### `uint8_t getCoreNumber()`
 - **Returns**: The current core number (`CORE1` or `CORE2`).
 
-#### `uint8_t runDiagnostics()`
-- **Returns**: `0` if no issues are detected; otherwise, an error code.
-
----
-
 ---
 
 ### ⚡ Power & Thermal Analysis
