@@ -1,5 +1,6 @@
 //Espresso E2B Authentication - Master example
 /*NOTES:
+-Host device for using an ATtiny85 (or other slaved device) as an authentication IC for added security
 */
 #include <E2B.h>
 

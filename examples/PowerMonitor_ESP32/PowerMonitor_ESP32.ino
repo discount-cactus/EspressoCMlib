@@ -113,9 +113,9 @@ void loop(){
   // Print the reassembled values
   Serial.println("---------------------------------------------------------------------------------------------");
   Serial.print("Config Byte: "); Serial.println(configByte, HEX);
-  Serial.print("Current = "); Serial.print(current); Serial.println(" A");
-  Serial.print("Load Power = "); Serial.print(loadPower); Serial.println(" W");
-  Serial.print("Input Power = "); Serial.print(inputPower); Serial.println(" W");
+  Serial.print("Current = "); Serial.print(current,3); Serial.println(" A");
+  Serial.print("Load Power = "); Serial.print(loadPower,3); Serial.println(" W");
+  Serial.print("Input Power = "); Serial.print(inputPower,3); Serial.println(" W");
   Serial.print("Input Voltage = "); Serial.print(VIN); Serial.println(" V");
 
   Serial.print("Amp-Hours = "); Serial.print(ampHours, 4); Serial.println(" Ah");

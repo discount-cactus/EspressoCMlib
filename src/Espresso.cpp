@@ -105,27 +105,6 @@ uint8_t EspressoCM::checksum(const uint8_t *addr, uint8_t len){
   for (int i=0; i < len; i++) checksum ^= addr[i];
 	return checksum;
 }
-//Hamming Code Test Sketch
-/*NOTES:
--This code demonstrates Hamming(7,4) encoding and decoding. You can modify it to suit your specific requirements.
--This implementation assumes a single-bit error. For multiple-bit errors, consider using more advanced error-correcting codes.
-*//*
-
-void setup() {
-  Serial.begin(9600);
-  while(!Serial){}
-
-  uint8_t data = 0xA; // 1010 in binary
-  uint8_t encodedData = hamming74Encode(data);
-  uint8_t decodedData = hamming74Decode(encodedData);
-
-  Serial.print("Input Data: "); Serial.println(data,HEX);
-  Serial.print("Encoded Data: "); Serial.println(encodedData, BIN);
-  Serial.print("Decoded Data: "); Serial.println(decodedData,HEX);
-}
-
-void loop(){
-}*/
 
 //Hamming(7,4) Encoding Function
 uint8_t EspressoCM::hammingEncode(uint8_t data){
@@ -193,24 +172,6 @@ uint8_t EspressoCM::hammingDecode(uint8_t encodedData){
     return correctedData;
 }
 
-//Low-Density Parity Code Test Sketch
-/*void setup(){
-  Serial.begin(9600);
-
-  byte originalData = 0xC7; // Example 8-bit data
-
-  uint16_t encodedData = encodeLDPC(originalData);
-  byte decodedData = decodeLDPC(encodedData);
-
-  Serial.println("LDPC Encoding and Decoding Example:");
-  Serial.print("Original Data: "); Serial.println(originalData, HEX);
-  Serial.print("Encoded Data: "); Serial.println(encodedData, BIN);
-  Serial.print("Decoded Data: "); Serial.println(decodedData, HEX);
-}
-
-void loop(){
-}*/
-
 // Function to encode a byte using LDPC
 uint16_t EspressoCM::encodeLDPC(byte data){
   const int n = 8; // Number of data bits
@@ -266,22 +227,6 @@ byte EspressoCM::decodeLDPC(uint16_t encodedData){
 
   return decodedData;
 }
-
-/*Convolution codes Test sketch:
-void setup(){
-  Serial.begin(9600);
-
-  uint8_t testData = 0x55;  // Input byte (01010101)
-  uint16_t encodedData = encodeConvolutional(testData);
-  uint8_t decodedData = decodeConvolutional(encodedData);
-
-  Serial.print("Input Data: "); Serial.println(testData, BIN);  // Print input in binary
-  Serial.print("Encoded Data: "); Serial.println(encodedData, BIN);  // Print encoded output in binary
-  Serial.print("Decoded Data: "); Serial.println(decodedData, BIN);
-}
-
-void loop(){
-}*/
 
 //Encodes a byte of data with Convolution Codes using G1 = 111 (7) and G2 = 101 (5) polynomials
 uint16_t EspressoCM::encodeConvolution(uint8_t inputByte){
@@ -343,9 +288,3 @@ uint8_t EspressoCM::decodeConvolution(uint16_t encodedData){
 //Creates a private wi-fi server.
 /*void EspressoCM::establish_WiFi_server(){
 }*/
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////ATTINY85///////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

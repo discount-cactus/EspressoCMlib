@@ -1,5 +1,7 @@
 //Espresso CM Authentication Program
 /*NOTES:
+-Slaved device for using an ATtiny85 (or other slaved device) as an authentication IC for added security
+
 MEMORY MAP:
 Address: Range	Size	Purpose	Description
 0x00–0x07:   8B    ROM / Device UID	Unique 8-byte ID for the authentication chip (used in rom[])
@@ -9,7 +11,6 @@ Address: Range	Size	Purpose	Description
 0x12–0x1F:   14B   (Reserved)	Reserved for future secure state, keys, etc.
 0x20–0x21:   2B    Usage Counter	16-bit usage counter (read via CMD_GET_USAGE_COUNTER)
 0x22–0xFF:   ~222B (Available / Reserved)	Free for future features like temporary secrets, audit logs, pairing data
-
 */
 #include <E2B.h>
 //#include <avr/wdt.h>

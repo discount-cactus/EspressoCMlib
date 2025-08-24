@@ -4,7 +4,6 @@
 #include <Arduino.h>
 
 #define vbat 3.7
-
 #define CORE1 1
 #define CORE2 2
 
@@ -14,7 +13,7 @@ class EspressoCM{
     EspressoCM();
     uint8_t getCoreNumber();
     uint8_t runDiagnostics();
-    
+
     float getBoardLDOEfficiency(float _pin, float _pout);
     float getBoardHeatDissipation(float _pin, float _pout);
     float getRegulatorTemperatureRise(float _pin, float _pout);
