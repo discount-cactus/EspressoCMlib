@@ -9,9 +9,9 @@
 
 #define R_sense 0.003
 #define opamp_gain 733.33
-#define v_offset 0.05
+#define v_offset 0.19
 
-E2B e2b(E2B_pin);  // on pin 2 (a 4.7K resistor is necessary)
+E2B e2b(E2B_pin);
 
 byte configByte = 0xAA;
 
@@ -49,7 +49,7 @@ void getPower(){
 
   float raw = analogRead(ISNS_pin);
   float voltage = (raw / 1023.0) * 3.3;   //Scales to actual voltage (assuming 3.3V Vcc as ADC ref)
-  voltage -= v_offset;                    //Calculates out the offset from the PCB trace
+  voltage += v_offset;                    //Calculates out the offset from the PCB trace
   float v_sense = voltage / opamp_gain;   //Back-calculates with the op-amps gain
   float current = v_sense / R_sense;      //Uses Ohm's Law to calculate the measured current from the shunt resistor
 
